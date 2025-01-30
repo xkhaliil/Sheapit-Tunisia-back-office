@@ -1,3 +1,5 @@
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import authConfig from "@/auth-config";
 import NextAuth from "next-auth";
 
@@ -9,29 +11,34 @@ import {
 } from "./routes";
 
 const { auth } = NextAuth(authConfig);
-export default auth((req): any => {
-  const { nextUrl } = req;
-  const isLoggedIn = !!req.auth;
 
-  const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
-  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
-  const isPrivateRoutes = privateRoutes.includes(nextUrl.pathname);
+export async function middleware(request: NextRequest) {
+  const session = await auth();
 
-  if (isApiAuthRoute) {
-    return null;
-  }
-  if (isPrivateRoutes) {
-    if (isLoggedIn) {
-      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+  // Check if the user is trying to access protected routes
+  if (
+    request.nextUrl.pathname.startsWith("/dashboard") ||
+    request.nextUrl.pathname.startsWith("/settings")
+  ) {
+    if (!session) {
+      // If no session exists, redirect to sign in
+      return NextResponse.redirect(new URL("/auth/sign-in", request.url));
     }
-    return null;
+
+    // Add your role-based access control here
+    // Example: if trying to access admin routes without admin role
+    if (
+      request.nextUrl.pathname.startsWith("/admin") &&
+      session.user.role !== "admin"
+    ) {
+      return NextResponse.redirect(new URL("/forbidden", request.url));
+    }
   }
-  if (!isLoggedIn && !isPublicRoute) {
-    return Response.redirect(new URL("/auth/sign-in", nextUrl));
-  }
-  return null;
-});
+
+  return NextResponse.next();
+}
+
+// Configure the middleware to run on specific paths
 export const config = {
-  matcher:
-    "/((?!api|_next/static|site.webmanifest|images|image|videos|fonts|site.webmanifest|favicon.ico|opengraph-image.png).*)",
+  matcher: ["/dashboard/:path*", "/settings/:path*", "/admin/:path*"],
 };

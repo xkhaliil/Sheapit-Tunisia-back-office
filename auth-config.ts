@@ -18,6 +18,7 @@ export default {
           if (!user || !user.password) {
             return null;
           }
+
           const passwordMatch = await bcrypt.compare(password, user.password);
           if (passwordMatch && user.role === Role.ADMIN) {
             return user;
