@@ -25,7 +25,7 @@ export default function Header({
       id: 2,
       title: "New Subscription",
       message: "Sarah Smith upgraded to premium",
-      time: "1 hour ago",
+      time: "2 hour ago",
     },
     {
       id: 3,
