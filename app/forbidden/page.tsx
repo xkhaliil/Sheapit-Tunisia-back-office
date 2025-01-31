@@ -16,8 +16,8 @@ export default function Forbidden() {
             Access Forbidden
           </h2>
           <p className="text-sm text-muted-foreground sm:text-base">
-            Sorry, you don't have permission to access this page. Please contact
-            your administrator if you believe this is a mistake.
+            Sorry, you don&apos;t have permission to access this page. Please
+            contact your administrator if you believe this is a mistake.
           </p>
         </div>
         <div className="flex justify-center">
