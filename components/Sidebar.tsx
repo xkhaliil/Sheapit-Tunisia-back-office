@@ -1,10 +1,10 @@
+import { handleSignOut } from "@/actions/auth";
 import { motion } from "framer-motion";
 import { CreditCard, Flag, Home, LogOut, Settings, Users } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { handleSignOut } from "@/app/actions/auth";
 
 const menuItems = [
   { icon: Home, label: "Overview", value: "overview" },
