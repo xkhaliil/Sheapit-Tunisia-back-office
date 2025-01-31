@@ -6,6 +6,7 @@ import Link from "next/link";
 import { login } from "@/actions/auth/sign-in";
 import { SignInData, SignInSchema } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,7 @@ export function SignInForm() {
       password: "",
     },
   });
+
   const processForm = async (values: SignInData) => {
     setError("");
     setSuccess("");
@@ -53,6 +55,7 @@ export function SignInForm() {
         .catch(() => setError("Something went wrong"));
     });
   };
+
   return (
     <div className="flex w-full flex-col gap-6 sm:w-[450px]">
       <div className="flex flex-col gap-4">
@@ -83,6 +86,7 @@ export function SignInForm() {
                     <Input
                       type="email"
                       placeholder="name@example.com"
+                      disabled={isPending}
                       {...field}
                     />
                   </FormControl>
@@ -98,7 +102,12 @@ export function SignInForm() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="•••••••••" {...field} />
+                    <Input
+                      type="password"
+                      placeholder="•••••••••"
+                      disabled={isPending}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -106,8 +115,15 @@ export function SignInForm() {
             />
             {error && <FormError message={error} />}
 
-            <Button type="submit" className="w-full">
-              Sign in
+            <Button type="submit" className="w-full" disabled={isPending}>
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                "Sign in"
+              )}
             </Button>
           </form>
         </Form>

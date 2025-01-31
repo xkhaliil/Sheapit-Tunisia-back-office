@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import authConfig from "@/auth-config";
-import NextAuth from "next-auth";
+import { Role } from "@prisma/client";
+import NextAuth, { DefaultSession } from "next-auth";
 
 import {
   apiAuthPrefix,
@@ -10,27 +11,34 @@ import {
   publicRoutes,
 } from "./routes";
 
+declare module "next-auth" {
+  interface Session {
+    user: {
+      role?: Role;
+    } & DefaultSession["user"];
+  }
+  interface User {
+    role?: Role;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    role?: Role;
+  }
+}
+
 const { auth } = NextAuth(authConfig);
 
 export async function middleware(request: NextRequest) {
   const session = await auth();
 
-  // Check if the user is trying to access protected routes
-  if (
-    request.nextUrl.pathname.startsWith("/dashboard") ||
-    request.nextUrl.pathname.startsWith("/settings")
-  ) {
-    if (!session) {
-      // If no session exists, redirect to sign in
-      return NextResponse.redirect(new URL("/auth/sign-in", request.url));
+  if (request.nextUrl.pathname.startsWith("/admin")) {
+    if (!session?.user) {
+      return NextResponse.redirect(new URL("/forbidden", request.url));
     }
 
-    // Add your role-based access control here
-    // Example: if trying to access admin routes without admin role
-    if (
-      request.nextUrl.pathname.startsWith("/admin") &&
-      session.user.role !== "admin"
-    ) {
+    if (session.user.role !== Role.ADMIN) {
       return NextResponse.redirect(new URL("/forbidden", request.url));
     }
   }
@@ -40,5 +48,5 @@ export async function middleware(request: NextRequest) {
 
 // Configure the middleware to run on specific paths
 export const config = {
-  matcher: ["/dashboard/:path*", "/settings/:path*", "/admin/:path*"],
+  matcher: ["/admin/:path*"],
 };
