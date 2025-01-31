@@ -1,4 +1,4 @@
-import { handleSignOut } from "@/actions/auth";
+import { redirect } from "next/navigation";
 import { motion } from "framer-motion";
 import { CreditCard, Flag, Home, LogOut, Settings, Users } from "lucide-react";
 
@@ -98,7 +98,7 @@ export function Sidebar({
         <Button
           variant="ghost"
           className="w-full justify-start hover:bg-accent/10 hover:text-accent dark:text-white dark:hover:bg-accent/20 dark:hover:text-accent-foreground"
-          onClick={() => handleSignOut()}
+          onClick={() => redirect("/api/auth/signout")}
         >
           <LogOut className="mr-2 h-4 w-4 text-accent dark:text-white" />
           Logout

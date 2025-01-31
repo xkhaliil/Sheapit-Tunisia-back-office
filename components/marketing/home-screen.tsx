@@ -22,7 +22,7 @@ export function HomeScreen() {
           </p>
         </div>
         <Button className="z-40 w-32" asChild>
-          <Link href="/auth/sign-in">Enter</Link>
+          <Link href="/admin">Enter</Link>
         </Button>
       </div>
       <AnimatedGridPattern
